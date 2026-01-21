@@ -1,1 +1,5 @@
 @import "tailwindcss";
+/* FIX slick width issue on mobile */
+.slick-slide > div {
+  width: 100%;
+}
