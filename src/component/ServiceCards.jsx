@@ -27,13 +27,13 @@ const ServiceCards = () => {
   }, []);
 
   return (
-    <section className="w-full py-20 px-6 lg:px-24 bg-gradient-to-b from-white to-gray-50">
+    <section className="w-full py-20 px-6 lg:px-24 bg-white">
       {/* SECTION HEADER */}
       <div className="text-center mb-16">
         <p className="text-orange-400 font-semibold tracking-widest uppercase text-sm mb-3">
           What We Do
         </p>
-        <h2 className="text-3xl md:text-4xl xl:text-5xl font-extrabold text-[#112b5b]">
+        <h2 className="text-3xl md:text-4xl xl:text-5xl font-extrabold text-ink tracking-tight">
           Our Services
         </h2>
       </div>
@@ -47,14 +47,14 @@ const ServiceCards = () => {
             data-aos-delay={index * 100} // stagger animation
             className={`
               relative
-              rounded-3xl
+              rounded-lg
               p-8
-              shadow-lg
+              shadow-sm
               border
               transition-all
               duration-300
               hover:-translate-y-2
-              hover:shadow-2xl
+              hover:shadow-md
               group
               ${cardColors[index % cardColors.length]}
             `}
@@ -68,7 +68,7 @@ const ServiceCards = () => {
                 -translate-x-1/2
                 w-14
                 h-14
-                rounded-2xl
+                rounded-lg
                 bg-gradient-to-br
                 from-orange-400
                 to-orange-500
@@ -86,8 +86,8 @@ const ServiceCards = () => {
 
             {/* CONTENT */}
             <div className="pt-10 text-center">
-              <h3 className="text-lg font-bold text-[#112b5b] mb-2">{service.title}</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">{service.description}</p>
+              <h3 className="text-lg font-bold text-ink mb-2">{service.title}</h3>
+              <p className="text-sm text-ink-soft leading-relaxed">{service.description}</p>
 
               {/* STARS */}
               <div className="flex justify-center gap-1 mt-6">

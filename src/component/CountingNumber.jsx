@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 const CountingNumber = ({ max = 101, interval = 30 }) => {
   const [count, setCount] = useState(1);
   const colors = [
-  "#FFA500", // Orange - creative, friendly
+  "#D97239", // Orange - creative, friendly
   "#FFFFFF", // White - clean, trustworthy
   "#FBC02D",
 "#FFFFFF", // Gold-ish Yellow - premium, optimistic

@@ -56,7 +56,7 @@ const OurWorkSection = () => {
         {works.map((work) => (
          <div
   key={work.id}
-  className="relative group w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-500 bg-white"
+  className="relative group w-full aspect-[4/3] rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-500 bg-white"
 >
   {/* Image */}
   <img
@@ -67,15 +67,15 @@ const OurWorkSection = () => {
 
   {/* Default Bottom Title + Line */}
   <div className="absolute bottom-0 left-0 w-full z-20 transition-all duration-500 group-hover:translate-y-full">
-    <div className="bg-[#0a1f44] px-3 py-2 text-white text-center">
+    <div className="bg-[#18140F] px-3 py-2 text-white text-center">
       <h3 className="text-lg md:text-sm font-semibold">{work.title}</h3>
     </div>
-    <div className="h-[2px] w-full bg-[#0a1f44]" />
+    <div className="h-[2px] w-full bg-[#18140F]" />
   </div>
 
   {/* Hover Content Overlay */}
   <div
-    className="absolute left-0 right-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out bg-[#0a1f44]/95 text-white px-6 py-8 flex flex-col justify-center items-center text-center z-10 h-full"
+    className="absolute left-0 right-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out bg-[#18140F]/95 text-white px-6 py-8 flex flex-col justify-center items-center text-center z-10 h-full"
   >
     <h3 className="text-lg md:text-xl font-bold mb-3">{work.title}</h3>
     <p className="text-sm md:text-[15px] leading-relaxed max-h-[220px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent pr-2">

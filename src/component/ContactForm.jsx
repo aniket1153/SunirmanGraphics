@@ -1,8 +1,10 @@
 import React, { useRef, useState, useEffect } from "react";
-import { FaWhatsapp, FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
+import { FaWhatsapp, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCheckCircle } from "react-icons/fa";
 import { IoCall } from "react-icons/io5";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { createLead } from "../api/leads";
 
 const faqs = [
   {
@@ -25,7 +27,11 @@ const faqs = [
 
 const ContactForm = () => {
   const form = useRef();
+  const location = useLocation();
+  const product = location.state?.product;
+
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [openFAQ, setOpenFAQ] = useState(null);
 
   useEffect(() => {
@@ -36,29 +42,26 @@ const ContactForm = () => {
     setOpenFAQ(openFAQ === index ? null : index);
   };
 
-  const sendEmail = (e) => {
+  const sendEmail = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    emailjs
-      .sendForm(
-        "your_service_id",
-        "your_template_id",
-        form.current,
-        "your_public_key"
-      )
-      .then(
-        () => {
-          alert("Message sent successfully!");
-          form.current.reset();
-          setLoading(false);
-        },
-        (error) => {
-          alert("Failed to send message. Try again!");
-          console.error(error);
-          setLoading(false);
-        }
-      );
+    const payload = {
+      name: form.current.user_name.value,
+      email: form.current.user_email.value,
+      product: product || null,
+      message: form.current.message.value,
+    };
+
+    try {
+      await createLead(payload);
+      setSubmitted(true);
+      form.current.reset();
+    } catch {
+      alert("Something went wrong sending your enquiry. Please try WhatsApp instead.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleWhatsApp = (e) => {
@@ -72,13 +75,13 @@ const ContactForm = () => {
   };
 
   return (
-    <section className="bg-gradient-to-br from-gray-50 via-white to-gray-100 pt-32 pb-16 px-6 sm:px-12 lg:px-24 min-h-screen">
+    <section className="bg-white pt-32 pb-16 px-6 sm:px-12 lg:px-24 min-h-screen">
       <div className="max-w-7xl mx-auto space-y-16">
         {/* FORM + MAP */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 shadow-2xl rounded-2xl overflow-hidden bg-white">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 shadow-sm border border-hairline rounded-lg overflow-hidden bg-white">
           {/* Map */}
           <div
-            className="w-full h-96 lg:h-auto rounded-l-2xl overflow-hidden"
+            className="w-full h-96 lg:h-auto rounded-l-lg overflow-hidden"
             data-aos="fade-right"
           >
             <iframe
@@ -95,71 +98,102 @@ const ContactForm = () => {
 
           {/* Contact Form */}
           <div
-            className="bg-gray-50 p-10 rounded-r-2xl flex flex-col justify-center"
+            className="bg-gray-50 p-10 rounded-r-lg flex flex-col justify-center"
             data-aos="fade-left"
           >
-            <h2 className="text-4xl font-extrabold text-blue-900 mb-8 text-center">
+            <h2 className="text-4xl font-extrabold text-ink tracking-tight mb-2 text-center">
               Get in Touch
             </h2>
-            <form ref={form} onSubmit={sendEmail} className="space-y-6">
-              <div>
-                <label className="block mb-2 font-semibold text-gray-700">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  name="user_name"
-                  required
-                  placeholder="Your full name"
-                  className="w-full px-5 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-3 focus:ring-blue-500 shadow-sm transition-transform hover:scale-105"
-                />
-              </div>
+            <p className="text-center text-ink-soft mb-8">
+              Send us an enquiry and we'll get back to you shortly.
+            </p>
 
-              <div>
-                <label className="block mb-2 font-semibold text-gray-700">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="user_email"
-                  required
-                  placeholder="your.email@example.com"
-                  className="w-full px-5 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-3 focus:ring-blue-500 shadow-sm transition-transform hover:scale-105"
-                />
-              </div>
-
-              <div>
-                <label className="block mb-2 font-semibold text-gray-700">
-                  Message
-                </label>
-                <textarea
-                  name="message"
-                  rows="5"
-                  required
-                  placeholder="Write your message here..."
-                  className="w-full px-5 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-3 focus:ring-blue-500 shadow-sm transition-transform hover:scale-105 resize-none"
-                ></textarea>
-              </div>
-
-              <div className="flex flex-col sm:flex-row justify-center gap-6 mt-8">
+            {submitted ? (
+              <div className="flex flex-col items-center text-center gap-4 py-10">
+                <FaCheckCircle size={48} className="text-orange-500" />
+                <h3 className="text-2xl font-bold text-ink">
+                  Enquiry received!
+                </h3>
+                <p className="text-ink-soft max-w-sm">
+                  Thanks for reaching out{product ? ` about ${product}` : ""}.
+                  Our team will contact you shortly.
+                </p>
                 <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex items-center justify-center gap-3 bg-blue-900 hover:bg-blue-800 disabled:bg-blue-400 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition-transform hover:scale-105"
+                  onClick={() => setSubmitted(false)}
+                  className="mt-2 text-sm font-semibold text-orange-500 hover:underline"
                 >
-                  <FaEnvelope size={20} />
-                  {loading ? "Sending..." : "Send via Email"}
-                </button>
-
-                <button
-                  onClick={handleWhatsApp}
-                  className="flex items-center justify-center gap-3 bg-green-700 hover:bg-green-600 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition-transform hover:scale-105"
-                >
-                  <FaWhatsapp size={20} />
-                  Send via WhatsApp
+                  Send another enquiry
                 </button>
               </div>
-            </form>
+            ) : (
+              <form ref={form} onSubmit={sendEmail} className="space-y-6">
+                {product && (
+                  <div className="flex items-center justify-between bg-orange-50 border border-orange-200 text-orange-700 text-sm font-medium px-4 py-3 rounded-lg">
+                    Enquiring about: <span className="font-bold">{product}</span>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block mb-2 font-semibold text-ink-soft">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    name="user_name"
+                    required
+                    placeholder="Your full name"
+                    className="w-full px-5 py-3 rounded-lg border border-hairline bg-white focus:outline-none focus:ring-3 focus:ring-orange-200 focus:border-orange-400 shadow-sm transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 font-semibold text-ink-soft">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="user_email"
+                    required
+                    placeholder="your.email@example.com"
+                    className="w-full px-5 py-3 rounded-lg border border-hairline bg-white focus:outline-none focus:ring-3 focus:ring-orange-200 focus:border-orange-400 shadow-sm transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 font-semibold text-ink-soft">
+                    Message
+                  </label>
+                  <textarea
+                    name="message"
+                    rows="5"
+                    required
+                    defaultValue={product ? `Hi, I'd like a quote for ${product}. ` : ""}
+                    placeholder="Write your message here..."
+                    className="w-full px-5 py-3 rounded-lg border border-hairline bg-white focus:outline-none focus:ring-3 focus:ring-orange-200 focus:border-orange-400 shadow-sm transition-colors resize-none"
+                  ></textarea>
+                </div>
+
+                <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex items-center justify-center gap-3 bg-ink hover:bg-orange-500 disabled:opacity-60 text-cream font-semibold px-8 py-3 rounded-full shadow-sm transition-all hover:scale-105"
+                  >
+                    <FaEnvelope size={20} />
+                    {loading ? "Sending..." : "Send Enquiry"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleWhatsApp}
+                    className="flex items-center justify-center gap-3 bg-green-700 hover:bg-green-600 text-white font-semibold px-8 py-3 rounded-full shadow-sm transition-transform hover:scale-105"
+                  >
+                    <FaWhatsapp size={20} />
+                    Send via WhatsApp
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
 
@@ -168,34 +202,34 @@ const ContactForm = () => {
   className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto"
   data-aos="fade-up"
 >
-  <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white rounded-2xl p-6 flex items-center gap-4 shadow-xl hover:-translate-y-1 transition-all cursor-pointer">
+  <div className="bg-ink text-cream rounded-lg p-6 flex items-center gap-4 shadow-sm hover:-translate-y-1 hover:bg-orange-600 transition-all cursor-pointer">
     <IoCall size={22} className="opacity-80" />
     <div>
-      <p className="text-xs uppercase tracking-widest text-gray-400">Call Us</p>
+      <p className="text-xs uppercase tracking-widest text-cream/60">Call Us</p>
       <p className="font-semibold">+91 9307011622</p>
     </div>
   </div>
 
-  <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white rounded-2xl p-6 flex items-center gap-4 shadow-xl hover:-translate-y-1 transition-all cursor-pointer">
+  <div className="bg-ink text-cream rounded-lg p-6 flex items-center gap-4 shadow-sm hover:-translate-y-1 hover:bg-orange-600 transition-all cursor-pointer">
     <FaWhatsapp size={22} className="opacity-80" />
     <div>
-      <p className="text-xs uppercase tracking-widest text-gray-400">WhatsApp</p>
+      <p className="text-xs uppercase tracking-widest text-cream/60">WhatsApp</p>
       <p className="font-semibold">Chat Now</p>
     </div>
   </div>
 
-  <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white rounded-2xl p-6 flex items-center gap-4 shadow-xl hover:-translate-y-1 transition-all cursor-pointer">
+  <div className="bg-ink text-cream rounded-lg p-6 flex items-center gap-4 shadow-sm hover:-translate-y-1 hover:bg-orange-600 transition-all cursor-pointer">
     <FaEnvelope size={22} className="opacity-80" />
     <div>
-      <p className="text-xs uppercase tracking-widest text-gray-400">Email</p>
+      <p className="text-xs uppercase tracking-widest text-cream/60">Email</p>
       <p className="font-semibold">support@example.com</p>
     </div>
   </div>
 
-  <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white rounded-2xl p-6 flex items-center gap-4 shadow-xl hover:-translate-y-1 transition-all cursor-pointer">
+  <div className="bg-ink text-cream rounded-lg p-6 flex items-center gap-4 shadow-sm hover:-translate-y-1 hover:bg-orange-600 transition-all cursor-pointer">
     <FaMapMarkerAlt size={22} className="opacity-80" />
     <div>
-      <p className="text-xs uppercase tracking-widest text-gray-400">Address</p>
+      <p className="text-xs uppercase tracking-widest text-cream/60">Address</p>
       <p className="font-semibold">San Francisco, CA</p>
     </div>
   </div>
@@ -204,24 +238,24 @@ const ContactForm = () => {
 
         {/* FAQ Section */}
         <div className="mt-16 max-w-4xl mx-auto" data-aos="fade-up">
-          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+          <h3 className="text-3xl font-bold text-ink tracking-tight mb-8 text-center">
             Frequently Asked Questions
           </h3>
           <div className="space-y-4">
             {faqs.map((faq, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200"
+                className="bg-white rounded-lg shadow-sm overflow-hidden border border-hairline"
               >
                 <button
-                  className="w-full text-left px-6 py-4 flex justify-between items-center font-semibold text-gray-800 hover:bg-gray-50 transition"
+                  className="w-full text-left px-6 py-4 flex justify-between items-center font-semibold text-ink hover:bg-gray-50 transition"
                   onClick={() => toggleFAQ(idx)}
                 >
                   {faq.question}
                   <span className="text-xl">{openFAQ === idx ? "−" : "+"}</span>
                 </button>
                 {openFAQ === idx && (
-                  <div className="px-6 py-4 text-gray-600 border-t border-gray-200">
+                  <div className="px-6 py-4 text-ink-soft border-t border-hairline">
                     {faq.answer}
                   </div>
                 )}

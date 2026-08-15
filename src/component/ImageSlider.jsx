@@ -67,7 +67,7 @@ const ImageSlider = () => {
             />
 
             {/* Overlay */}
-            <div className="absolute inset-0 bg-black/45 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-transparent pointer-events-none" />
 
             {/* Content */}
             <div className="absolute inset-0 flex items-center">
@@ -83,6 +83,7 @@ const ImageSlider = () => {
                       text-2xl sm:text-3xl md:text-4xl lg:text-5xl
                       font-semibold
                       leading-tight
+                      drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]
                     "
                   >
                     {slide.title}
@@ -96,6 +97,7 @@ const ImageSlider = () => {
                       mt-4
                       text-white/90
                       text-sm sm:text-base md:text-lg
+                      drop-shadow-[0_2px_8px_rgba(0,0,0,0.55)]
                     "
                   >
                     {slide.desc}
@@ -108,13 +110,14 @@ const ImageSlider = () => {
                     className="
                       mt-6
                       inline-flex items-center
+                      bg-black/25 backdrop-blur-sm
                       border border-white/70
                       text-white
-                      px-5 py-2.5
+                      px-6 py-2.5
                       text-sm
-                      font-medium
-                      rounded-md
-                      hover:bg-white hover:text-black
+                      font-semibold
+                      rounded-full
+                      hover:bg-white hover:text-ink
                       transition-all duration-300
                     "
                   >
